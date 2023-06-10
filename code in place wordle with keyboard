@@ -1,0 +1,327 @@
+from graphics import Canvas
+import random
+import time
+
+CANVAS_WIDTH = 510
+CANVAS_HEIGHT = 670
+SQUARE_LEN = 60
+
+def main():
+    winning = False
+    canvas = Canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
+    
+    word_list = create_word_list()
+    answer = 'GUARD'      #word_list[random.randint(0, 14850)]
+    map = define_map()
+    paint_canvas(canvas)
+    keyboard_map = define_keyboard_map()
+    print(map)
+    print(keyboard_map)
+    paint_keyboard(canvas)
+    print('Welcome to Yang\'s wordle.')
+    for i in range(6):
+        user_input = ''
+        user_input = user_inputs(canvas, keyboard_map, i)
+        user_input = check_word_list(canvas, user_input, word_list, keyboard_map, i)
+        check_answer(map, answer, user_input, i)
+        update_keyboard_map(keyboard_map, answer, user_input)
+        print(map)
+        print(keyboard_map)
+        update_canvas(canvas, map, user_input, i)
+        update_keyboard(canvas, keyboard_map)
+        if check_winnning(map, i):
+            winning = True
+            print('You won!')
+            rect = canvas.create_rectangle(177, 50, 333, 109, 'black')
+            text = canvas.create_text(253,80,font='helvetica',font_size=20,text='Congrats!',color='white',anchor='center')
+            break
+    if winning == False:
+        print('Sorry, you used all six tries. The answer is \'', answer, '\'') 
+        rect = canvas.create_rectangle(97, 50, 413, 109, 'black')
+        text = canvas.create_text(253,80,font='helvetica',font_size=20,text='Sorry, the answer is GUARD',color='white',anchor='center')
+
+def update_keyboard(canvas, keyboard_map):
+    key_board_row_1 = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P']
+    key_board_row_2 = ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L']
+    key_board_row_3 = ['Z', 'X', 'C', 'V', 'B', 'N', 'M']
+    
+    # Create empty lists for each row
+    row_1_values = []
+    row_2_values = []
+    row_3_values = []
+    
+    # Iterate over the keyboard_map dictionary
+    for key, value in keyboard_map.items():
+        if key in key_board_row_1:
+            row_1_values.append(value)
+        elif key in key_board_row_2:
+            row_2_values.append(value)
+        elif key in key_board_row_3:
+            row_3_values.append(value)
+    #paint keyboard
+    for i in range(10):
+        color = keyboard_color_picker(row_1_values[i])
+        canvas.create_rectangle(10 + 50 * i, 460, 50 + 50 * i , 520, color)
+        canvas.create_text(30 + 50 * i, 493, font='helvetica', font_size=35, text=key_board_row_1[i], color='black', anchor='center')
+    for i in range(9):
+        color = keyboard_color_picker(row_2_values[i])
+        canvas.create_rectangle(35 + 50 * i, 530, 75 + 50 * i , 590, color)
+        canvas.create_text(55 + 50 * i, 563, font='helvetica', font_size=35, text=key_board_row_2[i], color='black', anchor='center')
+    for i in range(7):
+        color = keyboard_color_picker(row_3_values[i])
+        canvas.create_rectangle(85 + 50 * i, 600,125 + 50 * i , 660, color)
+        canvas.create_text(105 + 50 * i, 633, font='helvetica', font_size=35, text=key_board_row_3[i], color='black', anchor='center')
+    
+def keyboard_color_picker(c):
+    if c == 0:
+        return 'gainsboro'
+    elif c == 1:
+        return 'grey'
+    elif c == 2:
+        return 'gold'
+    elif c == 3:
+        return 'forestgreen'
+
+def update_canvas(canvas, map, user_input, i):
+    square_start_x = 85
+    square_start_y = 15 + i * (SQUARE_LEN + 10)
+    for j in range(5):
+        color = color_picker(map, i, j)
+        canvas.create_rectangle(square_start_x, square_start_y, square_start_x + SQUARE_LEN, square_start_y + SQUARE_LEN, color)
+        canvas.create_text(square_start_x+30,square_start_y+30,font='helvetica',font_size=42,text=user_input[j],color='white',anchor='center')
+        square_start_x += 70
+
+def color_picker(map, i, j):
+    if map[i][j] == 1:
+        return 'grey'
+    elif map[i][j] == 2:
+        return 'gold'
+    elif map[i][j] == 3:
+        return 'forestgreen'
+
+def update_keyboard_map(keyboard_map, answer, user_input):
+    for j in range(5):
+        if user_input[j] == answer[j]:
+            keyboard_map[user_input[j]] = 3
+        elif user_input[j] in answer:
+            if keyboard_map[user_input[j]] < 2:
+                keyboard_map[user_input[j]] = 2
+            else:
+                continue
+        else:
+            if keyboard_map[user_input[j]] < 1:
+                keyboard_map[user_input[j]] = 1
+            else:
+                continue    
+    return keyboard_map
+
+def paint_canvas(canvas):
+    row_start_x = 85
+    row_start_y = 15
+    for i in range(6):
+        draw_row(canvas, row_start_x, row_start_y, 'gainsboro')
+        row_start_y += 70
+
+def paint_keyboard(canvas):
+    key_board_row_1 = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P']
+    key_board_row_2 = ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L']
+    key_board_row_3 = ['Z', 'X', 'C', 'V', 'B', 'N', 'M']
+    for i in range(10):
+        canvas.create_rectangle(10 + 50 * i, 460, 50 + 50 * i , 520, 'gainsboro')
+        canvas.create_text(30 + 50 * i, 493, font='helvetica', font_size=35, text=key_board_row_1[i], color='black', anchor='center')
+    for i in range(9):
+        canvas.create_rectangle(35 + 50 * i, 530, 75 + 50 * i , 590, 'gainsboro')
+        canvas.create_text(55 + 50 * i, 563, font='helvetica', font_size=35, text=key_board_row_2[i], color='black', anchor='center')
+    for i in range(7):
+        canvas.create_rectangle(85 + 50 * i, 600,125 + 50 * i , 660, 'gainsboro')
+        canvas.create_text(105 + 50 * i, 633, font='helvetica', font_size=35, text=key_board_row_3[i], color='black', anchor='center')
+    
+    canvas.create_rectangle(10, 600, 75 , 660, 'gainsboro')
+    canvas.create_text(42, 632, font='helvetica', font_size=15, text='ENTER', color='black', anchor='center')
+    
+    canvas.create_rectangle(435, 600, 500 , 660, 'gainsboro')
+    canvas.create_text(468, 632, font='helvetica', font_size=15, text='DELETE', color='black', anchor='center')
+
+def draw_row(canvas, row_start_x, row_start_y, color):
+    square_start_x = row_start_x
+    square_start_y = row_start_y
+    for i in range(5):
+        canvas.create_rectangle(square_start_x, square_start_y, square_start_x + SQUARE_LEN, square_start_y + SQUARE_LEN, color)
+        square_start_x += 70
+
+def check_answer(map, answer, user_input, i):
+    for j in range(5):
+        if user_input[j] == answer[j]:
+            map[i][j] = 3
+        elif user_input[j] in answer:
+            map[i][j] = 2
+        else:
+            map[i][j] = 1
+    return map
+
+def user_inputs(canvas, keyboard_map, i):
+    user_input = []
+    vacb = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+    inputs = ''
+    count = 0
+    while True:
+        inputs = keystrike(canvas)
+        if inputs in vacb:
+            user_input.append(inputs)
+            print(user_input)
+            count += 1
+        elif inputs == 'DELETE':
+            if count > 0:
+                user_input.pop()
+                print(user_input)
+                count -= 1
+            else:
+                continue
+        elif inputs == 'ENTER':
+            if count >= 5:
+                break
+            else:
+                continue
+        update_row(canvas, user_input, i)
+    user_input = user_input[:5]        
+    print('your guess is ', user_input)
+    user_input_str = ''.join(user_input)
+    return user_input_str
+
+def update_row(canvas, user_input, i):
+    wipe_row(canvas, i)
+    square_start_x = 85
+    square_start_y = 15 + i * (SQUARE_LEN + 10)
+    if len(user_input) < 6:
+        length = len(user_input)
+    else:
+        length = 5
+    for j in range(length):
+        canvas.create_text(square_start_x+30,square_start_y+30,font='helvetica',font_size=42,text=user_input[j],color='black',anchor='center')
+        square_start_x += 70
+
+def keystrike(canvas):    
+    while True:
+        canvas.wait_for_click()
+        mouse_x = canvas.get_mouse_x()
+        mouse_y = canvas.get_mouse_y()
+        print(mouse_x, mouse_y)
+        
+        if 456 < mouse_y <= 523:
+            if 0 < mouse_x <= 55:
+                return 'Q'
+            elif 55 < mouse_x <= 105:
+                return 'W'
+            elif 105 < mouse_x <= 155:
+                return 'E'
+            elif 155 < mouse_x <= 205:
+                return 'R'
+            elif 205 < mouse_x <= 255:
+                return 'T'
+            elif 255 < mouse_x <= 305:
+                return 'Y'
+            elif 305 < mouse_x <= 355:
+                return 'U'
+            elif 355 < mouse_x <= 405:
+                return 'I'
+            elif 405 < mouse_x <= 455:
+                return 'O'
+            elif 455 < mouse_x <= 510:
+                return 'P'
+        if 523 < mouse_y <= 594:
+            if 35 < mouse_x <= 80:
+                return 'A'
+            elif 80 < mouse_x <= 130:
+                return 'S'
+            elif 130 < mouse_x <= 180:
+                return 'D'
+            elif 180 < mouse_x <= 230:
+                return 'F'
+            elif 230 < mouse_x <= 280:
+                return 'G'
+            elif 280 < mouse_x <= 330:
+                return 'H'
+            elif 330 < mouse_x <= 380:
+                return 'J'
+            elif 380 < mouse_x <= 430:
+                return 'K'
+            elif 430 < mouse_x <= 482:
+                return 'L'
+            
+        if 594 < mouse_y <= 667:
+            if 0 < mouse_x <= 80:
+                return 'ENTER'
+            elif 80 < mouse_x <= 130:
+                return 'Z'
+            elif 130 < mouse_x <= 180:
+                return 'X'
+            elif 180 < mouse_x <= 230:
+                return 'C'
+            elif 230 < mouse_x <= 280:
+                return 'V'
+            elif 280 < mouse_x <= 330:
+                return 'B'
+            elif 330 < mouse_x <= 380:
+                return 'N'
+            elif 380 < mouse_x <= 430:
+                return 'M'
+            elif 430 < mouse_x <= 510:
+                return 'DELETE'
+    
+def define_keyboard_map():
+    keyboard_map = {'Q':0, 'W':0, 'E':0, 'R':0, 'T':0, 'Y':0, 'U':0, 'I':0, 'O':0, 'P':0, 'A':0, 'S':0, 'D':0, 'F':0, 'G':0, 'H':0, 'J':0, 'K':0, 'L':0, 'Z':0, 'X':0, 'C':0, 'V':0, 'B':0, 'N':0, 'M':0}
+    return keyboard_map
+
+def check_winnning(map, i):
+    sum = 0
+    for j in range(5):
+        sum += int(map[i][j])
+    if sum == 15:
+        return True
+
+def define_map():
+    row_0 = [0, 0, 0, 0, 0]
+    row_1 = [0, 0, 0, 0, 0]
+    row_2 = [0, 0, 0, 0, 0]
+    row_3 = [0, 0, 0, 0, 0]
+    row_4 = [0, 0, 0, 0, 0]
+    row_5 = [0, 0, 0, 0, 0]
+    map = [row_0, row_1, row_2, row_3, row_4, row_5]
+    return map
+
+def create_word_list():
+    word_list = []
+    for line in open('word_list.txt'):
+        line = line.strip()
+        line = line.upper()
+        word_list.append(line)
+    word_list.remove('')    #remove null from the word list
+    return word_list
+
+def check_word_list(canvas, user_input, word_list, keyboard_map, i):
+    while True: 
+        if user_input in word_list:
+            break
+        else:
+            word_list_alert(canvas)
+            print("Your guess is not in the word list, please take another guess:")
+            wipe_row(canvas, i)
+            user_input = user_inputs(canvas, keyboard_map, i)
+    return user_input
+
+def word_list_alert(canvas):
+    rect = canvas.create_rectangle(134, 50, 373, 109, 'black')
+    text = canvas.create_text(253,80,font='helvetica',font_size=20,text='Not in word list',color='white',anchor='center')
+    time.sleep(1.3) 
+    canvas.delete(rect)
+    canvas.delete(text)
+    
+def wipe_row(canvas, i):
+    square_start_x = 85
+    square_start_y = 15 + i * 70
+    for i in range(5):
+        canvas.create_rectangle(square_start_x, square_start_y, square_start_x + SQUARE_LEN, square_start_y + SQUARE_LEN, 'gainsboro')
+        square_start_x += 70
+
+if __name__ == '__main__':
+    main()
