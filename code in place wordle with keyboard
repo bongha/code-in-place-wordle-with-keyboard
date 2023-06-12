@@ -86,15 +86,16 @@ def paint_keyboard(canvas):
     key_board_row_1 = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P']
     key_board_row_2 = ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L']
     key_board_row_3 = ['Z', 'X', 'C', 'V', 'B', 'N', 'M']
+    
     for i in range(10):
         canvas.create_rectangle(10 + 50 * i, 460, 50 + 50 * i , 520, 'gainsboro')
-        canvas.create_text(30 + 50 * i, 493, font='helvetica', font_size=35, text=key_board_row_1[i], color='black', anchor='center')
+        canvas.create_text(30 + 50 * i, 493, font='helvetica', font_size=25, text=key_board_row_1[i], color='black', anchor='center')
     for i in range(9):
         canvas.create_rectangle(35 + 50 * i, 530, 75 + 50 * i , 590, 'gainsboro')
-        canvas.create_text(55 + 50 * i, 563, font='helvetica', font_size=35, text=key_board_row_2[i], color='black', anchor='center')
+        canvas.create_text(55 + 50 * i, 563, font='helvetica', font_size=25, text=key_board_row_2[i], color='black', anchor='center')
     for i in range(7):
         canvas.create_rectangle(85 + 50 * i, 600,125 + 50 * i , 660, 'gainsboro')
-        canvas.create_text(105 + 50 * i, 633, font='helvetica', font_size=35, text=key_board_row_3[i], color='black', anchor='center')
+        canvas.create_text(105 + 50 * i, 633, font='helvetica', font_size=25, text=key_board_row_3[i], color='black', anchor='center')
     
     canvas.create_rectangle(10, 600, 75 , 660, 'gainsboro')
     canvas.create_text(42, 632, font='helvetica', font_size=15, text='ENTER', color='black', anchor='center')
@@ -269,6 +270,7 @@ def update_canvas(canvas, map, user_input, i):
         color = color_picker(map, i, j)
         canvas.create_rectangle(square_start_x, square_start_y, square_start_x + SQUARE_LEN, square_start_y + SQUARE_LEN, color)
         canvas.create_text(square_start_x+30,square_start_y+30,font='helvetica',font_size=42,text=user_input[j],color='white',anchor='center')
+        time.sleep(0.3) 
         square_start_x += 70
 
 def color_picker(map, i, j):
@@ -301,15 +303,15 @@ def update_keyboard(canvas, keyboard_map):
     for i in range(10):
         color = keyboard_color_picker(row_1_values[i])
         canvas.create_rectangle(10 + 50 * i, 460, 50 + 50 * i , 520, color)
-        canvas.create_text(30 + 50 * i, 493, font='helvetica', font_size=35, text=key_board_row_1[i], color='black', anchor='center')
+        canvas.create_text(30 + 50 * i, 493, font='helvetica', font_size=25, text=key_board_row_1[i], color='black', anchor='center')
     for i in range(9):
         color = keyboard_color_picker(row_2_values[i])
         canvas.create_rectangle(35 + 50 * i, 530, 75 + 50 * i , 590, color)
-        canvas.create_text(55 + 50 * i, 563, font='helvetica', font_size=35, text=key_board_row_2[i], color='black', anchor='center')
+        canvas.create_text(55 + 50 * i, 563, font='helvetica', font_size=25, text=key_board_row_2[i], color='black', anchor='center')
     for i in range(7):
         color = keyboard_color_picker(row_3_values[i])
         canvas.create_rectangle(85 + 50 * i, 600,125 + 50 * i , 660, color)
-        canvas.create_text(105 + 50 * i, 633, font='helvetica', font_size=35, text=key_board_row_3[i], color='black', anchor='center')
+        canvas.create_text(105 + 50 * i, 633, font='helvetica', font_size=25, text=key_board_row_3[i], color='black', anchor='center')
     
 def keyboard_color_picker(c):
     if c == 0:
