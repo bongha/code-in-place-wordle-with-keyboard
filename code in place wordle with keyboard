@@ -10,7 +10,7 @@ def main():
     winning = False
     canvas = Canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
     word_list = create_word_list()
-    answer = 'GUARD'      #word_list[random.randint(0, 14850)]
+    answer = generate_answer()
     
     map = define_map()
     print(map)
@@ -53,6 +53,14 @@ def create_word_list():
         word_list.append(line)
     word_list.remove('')    #remove null from the word list
     return word_list
+
+def generate_answer():
+    with open('wordle_answer_history.txt', 'r') as file:
+        answer = file.read()
+        answer_list = answer.split()
+    answer = answer_list[random.randint(0, 726)]
+    print(answer)
+    return answer
     
 def define_map():
     row_0 = [0, 0, 0, 0, 0]
