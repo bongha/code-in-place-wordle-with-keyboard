@@ -43,8 +43,8 @@ def main():
     if winning == False:
         print('Sorry, you used all six tries. The answer is \'', answer, '\'') 
         rect = canvas.create_rectangle(97, 50, 413, 109, 'black')
-        text = canvas.create_text(253,80,font='helvetica',font_size=20,text='Sorry, the answer is GUARD',color='white',anchor='center')
-
+        text = canvas.create_text(215,80,font='helvetica',font_size=20,text='Sorry, the answer is',color='white',anchor='center')
+        text = canvas.create_text(344,80,font='helvetica',font_size=20,text=answer,color='white',anchor='center')
 def create_word_list():
     word_list = []
     for line in open('word_list.txt'):
